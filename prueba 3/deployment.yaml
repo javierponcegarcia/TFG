@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp-web
+  template:
+    metadata:
+      labels:
+        app: myapp-web
+    spec:
+      containers:
+      - name: apache
+        image: jponce508/tfg:v16
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_HOST
+          value: "myapp-db"
+        - name: DB_USER
+          value: "user"
+        - name: DB_PASSWORD
+          value: "password"
+        - name: DB_NAME
+          value: "tienda_zapatillas"
+
+---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-web
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080  # Este es el puerto en los nodos que usará el servicio
+  selector:
+    app: myapp-web
